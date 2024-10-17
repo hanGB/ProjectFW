@@ -36,11 +36,18 @@ private:
 	void OnDash();
 	void OffDash();
 
+	void ChangeMode();
+
 	// Camera
 	UPROPERTY(VisibleDefaultsOnly)
 	class USpringArmComponent* SpringArm;
 	UPROPERTY(VisibleDefaultsOnly)
 	class UCameraComponent* Camera;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Camera")
+	float CameraHeight = 55.0f;
+	UPROPERTY(EditDefaultsOnly, Category = "Camera")
+	float CameraOffsetInAttackMode = 40.0f;
 
 	// Input
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
@@ -64,4 +71,12 @@ private:
 	float WalkSpeed = 200.0f;
 	UPROPERTY(EditAnywhere, Category = "Movement")
 	float RunSpeed = 400.0f;
+
+	// Animation
+	UPROPERTY(EditDefaultsOnly, Category = "Animation")
+	UClass* AttackModeAnimationBP;
+	UPROPERTY(EditDefaultsOnly, Category = "Animation")
+	UClass* NormalModeAnimationBP;
+
+	bool bAttackMode = false;
 };

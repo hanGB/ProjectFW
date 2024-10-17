@@ -40,6 +40,9 @@ void APlayerCharacter::BeginPlay()
 	}
 
 	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
+	GetMesh()->AddLocalOffset(FVector(0.0f, 0.0f, 5.0f));
+
+	ChangeMode();
 }
 
 // Called every frame
@@ -107,8 +110,8 @@ void APlayerCharacter::Look(const FInputActionInstance& Instance)
 
 void APlayerCharacter::Draw()
 {
-	bUseControllerRotationYaw = ~bUseControllerRotationYaw;
-	GetCharacterMovement()->bOrientRotationToMovement = ~GetCharacterMovement()->bOrientRotationToMovement;
+	bAttackMode = !bAttackMode;
+	ChangeMode();
 }
 
 void APlayerCharacter::OnDash()
@@ -119,4 +122,39 @@ void APlayerCharacter::OnDash()
 void APlayerCharacter::OffDash()
 {
 	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
+}
+
+void APlayerCharacter::ChangeMode()
+{
+	if (bAttackMode)
+	{
+		bUseControllerRotationYaw = true;
+		GetCharacterMovement()->bOrientRotationToMovement = false;
+		if (AttackModeAnimationBP)
+		{
+			GetMesh()->SetAnimInstanceClass(AttackModeAnimationBP);
+			GetMesh()->AddLocalOffset(FVector(0.0f, 0.0f, 5.0f));
+			
+			if (SpringArm)
+			{
+				SpringArm->SetRelativeLocation(FVector(0.f, CameraOffsetInAttackMode, CameraHeight));
+			}
+		}
+	}
+	else
+	{
+		bUseControllerRotationYaw = false;
+		GetCharacterMovement()->bOrientRotationToMovement = true;
+
+		if (NormalModeAnimationBP)
+		{
+			GetMesh()->SetAnimInstanceClass(NormalModeAnimationBP);
+			GetMesh()->AddLocalOffset(FVector(0.0f, 0.0f, -5.0f));
+
+			if (SpringArm)
+			{
+				SpringArm->SetRelativeLocation(FVector(0.f, 0.f, CameraHeight));
+			}
+		}
+	}
 }
