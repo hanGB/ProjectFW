@@ -7,6 +7,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 // Sets default values
 APlayerCharacter::APlayerCharacter()
@@ -37,6 +38,8 @@ void APlayerCharacter::BeginPlay()
 			}
 		}
 	}
+
+	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
 }
 
 // Called every frame
@@ -70,6 +73,11 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 		{
 			Input->BindAction(DrawAction, ETriggerEvent::Started, this, &APlayerCharacter::Draw);
 		}
+		if (DashAction)
+		{
+			Input->BindAction(DashAction, ETriggerEvent::Started, this, &APlayerCharacter::OnDash);
+			Input->BindAction(DashAction, ETriggerEvent::Completed, this, &APlayerCharacter::OffDash);
+		}
 	}
 }
 
@@ -100,4 +108,15 @@ void APlayerCharacter::Look(const FInputActionInstance& Instance)
 void APlayerCharacter::Draw()
 {
 	bUseControllerRotationYaw = ~bUseControllerRotationYaw;
+	GetCharacterMovement()->bOrientRotationToMovement = ~GetCharacterMovement()->bOrientRotationToMovement;
+}
+
+void APlayerCharacter::OnDash()
+{
+	GetCharacterMovement()->MaxWalkSpeed = RunSpeed;
+}
+
+void APlayerCharacter::OffDash()
+{
+	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
 }

@@ -33,6 +33,8 @@ private:
 	void Move(const FInputActionInstance& Instance);
 	void Look(const FInputActionInstance& Instance);
 	void Draw();
+	void OnDash();
+	void OffDash();
 
 	// Camera
 	UPROPERTY(VisibleDefaultsOnly)
@@ -52,7 +54,14 @@ private:
 	UInputAction* LookAction;
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	UInputAction* DrawAction;
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	UInputAction* DashAction;
 
 	UPROPERTY(EditAnywhere, Category = "Input")
 	float CameraRotationWithMouseSpeed = 0.5f;
+
+	UPROPERTY(EditAnywhere, Category = "Movement")
+	float WalkSpeed = 200.0f;
+	UPROPERTY(EditAnywhere, Category = "Movement")
+	float RunSpeed = 400.0f;
 };
