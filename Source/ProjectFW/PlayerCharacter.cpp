@@ -62,9 +62,13 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 		{
 			Input->BindAction(JumpAction, ETriggerEvent::Triggered, this, &ACharacter::Jump);
 		}
-		if (CameraRotateAction)
+		if (LookAction)
 		{
-			Input->BindAction(CameraRotateAction, ETriggerEvent::Triggered, this, &APlayerCharacter::RotateCamera);
+			Input->BindAction(LookAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Look);
+		}
+		if (DrawAction)
+		{
+			Input->BindAction(DrawAction, ETriggerEvent::Started, this, &APlayerCharacter::Draw);
 		}
 	}
 }
@@ -73,10 +77,19 @@ void APlayerCharacter::Move(const FInputActionInstance& Instance)
 {
 	FVector2D Value = Instance.GetValue().Get<FVector2D>();
 
-	AddMovementInput(GetActorForwardVector() * Value.Y + GetActorRightVector() * Value.X);
+	FRotator Rotation = GetController()->GetControlRotation();
+	// Use only yaw
+	Rotation.Pitch = 0.0f;
+	Rotation.Roll = 0.0f;
+
+	FVector ForwardDirection = FRotationMatrix(Rotation).GetUnitAxis(EAxis::X);
+	FVector RightDirection = FRotationMatrix(Rotation).GetUnitAxis(EAxis::Y);
+
+	AddMovementInput(ForwardDirection, Value.Y);
+	AddMovementInput(RightDirection, Value.X);
 }
 
-void APlayerCharacter::RotateCamera(const FInputActionInstance& Instance)
+void APlayerCharacter::Look(const FInputActionInstance& Instance)
 {
 	FVector2D Value = Instance.GetValue().Get<FVector2D>();
 
@@ -84,3 +97,7 @@ void APlayerCharacter::RotateCamera(const FInputActionInstance& Instance)
 	AddControllerYawInput(Value.X * CameraRotationWithMouseSpeed);
 }
 
+void APlayerCharacter::Draw()
+{
+	bUseControllerRotationYaw = ~bUseControllerRotationYaw;
+}

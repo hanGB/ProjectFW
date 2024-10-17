@@ -29,8 +29,10 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 private:
+	// Input Callback
 	void Move(const FInputActionInstance& Instance);
-	void RotateCamera(const FInputActionInstance& Instance);
+	void Look(const FInputActionInstance& Instance);
+	void Draw();
 
 	// Camera
 	UPROPERTY(VisibleDefaultsOnly)
@@ -47,7 +49,9 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	UInputAction* JumpAction;
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
-	UInputAction* CameraRotateAction;
+	UInputAction* LookAction;
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	UInputAction* DrawAction;
 
 	UPROPERTY(EditAnywhere, Category = "Input")
 	float CameraRotationWithMouseSpeed = 0.5f;
