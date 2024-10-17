@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "InputAction.h"
+
 #include "PlayerCharacter.generated.h"
 
 UCLASS()
@@ -26,4 +28,27 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+private:
+	void Move(const FInputActionInstance& Instance);
+	void RotateCamera(const FInputActionInstance& Instance);
+
+	// Camera
+	UPROPERTY(VisibleDefaultsOnly)
+	class USpringArmComponent* SpringArm;
+	UPROPERTY(VisibleDefaultsOnly)
+	class UCameraComponent* Camera;
+
+	// Input
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	class UInputMappingContext* InputMappingContext;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	UInputAction* MoveAction;
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	UInputAction* JumpAction;
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	UInputAction* CameraRotateAction;
+
+	UPROPERTY(EditAnywhere, Category = "Input")
+	float CameraRotationWithMouseSpeed = 0.5f;
 };
