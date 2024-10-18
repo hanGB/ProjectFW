@@ -28,13 +28,21 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	UFUNCTION(BlueprintPure)
+	float GetBlendWeightForMovement() const;
+
 private:
 	// Input Callback
 	void Move(const FInputActionInstance& Instance);
 	void Look(const FInputActionInstance& Instance);
-	void Draw();
+	void Draw();	
 	void OnDash();
 	void OffDash();
+
+	void StartShoot();
+
+	UFUNCTION(BlueprintCallable)
+	void EndShoot();
 
 	void ChangeMode();
 
@@ -63,6 +71,8 @@ private:
 	UInputAction* DrawAction;
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	UInputAction* DashAction;
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	UInputAction* ShootAction;
 
 	UPROPERTY(EditAnywhere, Category = "Input")
 	float CameraRotationWithMouseSpeed = 0.5f;
@@ -77,6 +87,8 @@ private:
 	UClass* AttackModeAnimationBP;
 	UPROPERTY(EditDefaultsOnly, Category = "Animation")
 	UClass* NormalModeAnimationBP;
+	UPROPERTY(EditDefaultsOnly, Category = "Animation")
+	UAnimMontage* FireAnimMontage;
 
 	bool bAttackMode = false;
 
@@ -86,4 +98,6 @@ private:
 
 	UPROPERTY()
 	class AGun* Gun;
+
+	bool bShooting = false;
 };

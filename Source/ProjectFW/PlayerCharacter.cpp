@@ -49,6 +49,8 @@ void APlayerCharacter::BeginPlay()
 		Gun->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, TEXT("gun_socket"));
 		Gun->SetOwner(this);
 	}
+
+	GetMesh()->SetAnimationMode(EAnimationMode::AnimationBlueprint);
 	ChangeMode();
 }
 
@@ -88,6 +90,22 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 			Input->BindAction(DashAction, ETriggerEvent::Started, this, &APlayerCharacter::OnDash);
 			Input->BindAction(DashAction, ETriggerEvent::Completed, this, &APlayerCharacter::OffDash);
 		}
+		if (ShootAction)
+		{
+			Input->BindAction(ShootAction, ETriggerEvent::Triggered, this, &APlayerCharacter::StartShoot);
+		}
+	}
+}
+
+float APlayerCharacter::GetBlendWeightForMovement() const
+{
+	if (bShooting)
+	{
+		return 1.0f;
+	}
+	else
+	{
+		return 0.0f;
 	}
 }
 
@@ -131,6 +149,31 @@ void APlayerCharacter::OffDash()
 	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
 }
 
+void APlayerCharacter::StartShoot()
+{
+	// Only Shoot in Attack Mode
+	if (bAttackMode)
+	{
+		if (bShooting)
+		{
+			return;
+		}
+		if (Gun)
+		{
+			Gun->PullTrigger();
+		}
+		PlayAnimMontage(FireAnimMontage);
+
+		bShooting = true;
+	}
+}
+
+void APlayerCharacter::EndShoot()
+{
+	// Call function by AnimNotify End Fire 
+	bShooting = false;
+}
+
 void APlayerCharacter::ChangeMode()
 {
 	if (bAttackMode)
@@ -150,6 +193,7 @@ void APlayerCharacter::ChangeMode()
 		if (Gun)
 		{
 			Gun->Draw(true);
+			bShooting = false;
 		}
 	}
 	else
@@ -170,6 +214,7 @@ void APlayerCharacter::ChangeMode()
 		if (Gun)
 		{
 			Gun->Draw(false);
+			bShooting = false;
 		}
 	}
 }

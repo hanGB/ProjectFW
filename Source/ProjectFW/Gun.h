@@ -24,10 +24,11 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	void Draw(bool bDraw);
+	void PullTrigger();
 
 private:
 	USceneComponent* Root;
 
-	UPROPERTY(VisibleDefaultsOnly)
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	USkeletalMeshComponent* Mesh;
 };

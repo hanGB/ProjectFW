@@ -35,3 +35,8 @@ void AGun::Draw(bool bDraw)
 	Mesh->SetVisibility(bDraw);
 }
 
+void AGun::PullTrigger()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Pull Trigger!!!"));
+}
+
