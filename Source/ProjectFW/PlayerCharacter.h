@@ -39,6 +39,8 @@ public:
 
 	void SetMode(bool bAttackMode);
 
+	float GetHealth() const;
+	float GetMaxHealth() const;
 
 private:
 	// Input Callback
@@ -105,9 +107,9 @@ private:
 	TSubclassOf<class AGun> GunClass;
 
 	UPROPERTY(EditAnywhere, Category = "Stat")
-	float MaxHealth = 100.0f;
+	float MaxHealth = 1000.0f;
 
-	float Health = 100.0f;
+	float Health = 1000.0f;
 
 	UPROPERTY()
 	class AGun* Gun;

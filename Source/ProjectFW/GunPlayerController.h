@@ -16,14 +16,26 @@ class PROJECTFW_API AGunPlayerController : public APlayerController
 	GENERATED_BODY()
 	
 public:
+	AGunPlayerController();
+
+	virtual void Tick(float DeltaTime) override;
 
 protected:
 	virtual void BeginPlay() override;
 
 	virtual void SetupInputComponent() override;
 
+	// HUD 업데이트용
 	UFUNCTION(BlueprintImplementableEvent)
 	void ShowCrosshair(bool bShow);
+	UFUNCTION(BlueprintImplementableEvent)
+	void UpdateMainHealthBar(float Health, float MaxHealth);
+	UFUNCTION(BlueprintImplementableEvent)
+	void UpdateAmmoBar(float percent, FLinearColor Color);
+	UFUNCTION(BlueprintImplementableEvent)
+	void UpdateSlotHealth(int slot, float percent);
+	UFUNCTION(BlueprintImplementableEvent)
+	void UpdateSlotColor (int slot, FLinearColor Color);
 
 	UFUNCTION(BlueprintPure)
 	UUserWidget* GetGunHUD() const;

@@ -233,3 +233,13 @@ void APlayerCharacter::SetMode(bool bAttackMode)
 		}
 	}
 }
+
+float APlayerCharacter::GetHealth() const
+{
+	return Health;
+}
+
+float APlayerCharacter::GetMaxHealth() const
+{
+	return MaxHealth;
+}

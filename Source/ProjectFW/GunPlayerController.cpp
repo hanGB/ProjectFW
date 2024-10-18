@@ -8,6 +8,27 @@
 #include "EnhancedInputComponent.h"
 #include "PlayerCharacter.h"
 
+AGunPlayerController::AGunPlayerController()
+{
+	PrimaryActorTick.bCanEverTick = true;
+}
+
+void AGunPlayerController::Tick(float DeltaTime)
+{
+	if (APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(GetPawn()))
+	{
+		UpdateMainHealthBar(PlayerCharacter->GetHealth(), PlayerCharacter->GetMaxHealth());
+		UpdateSlotHealth(1, PlayerCharacter->GetHealth() / PlayerCharacter->GetMaxHealth());
+		UpdateSlotColor(1, FLinearColor(1.0f, 0.0f, 0.0f) * 0.5f);
+		UpdateAmmoBar(1.0f, FLinearColor(1.0f, 0.0f, 0.0f));
+
+		UpdateSlotHealth(2, 0.0f);
+		UpdateSlotHealth(3, 0.0f);
+		UpdateSlotColor(2, FLinearColor(0.0f, 0.0f, 0.0f, 0.0f));
+		UpdateSlotColor(3, FLinearColor(0.0f, 0.0f, 0.0f, 0.0f));
+	}
+}
+
 void AGunPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
