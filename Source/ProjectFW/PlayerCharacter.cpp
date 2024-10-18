@@ -5,8 +5,6 @@
 
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
-#include "EnhancedInputSubsystems.h"
-#include "EnhancedInputComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Gun.h"
 
@@ -28,17 +26,6 @@ void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	if (APlayerController* PlayerController = Cast<APlayerController>(GetController()))
-	{
-		if (UEnhancedInputLocalPlayerSubsystem* EnhancedInputLocalPlayerSubsystem 
-			= ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
-		{
-			if (InputMappingContext)
-			{
-				EnhancedInputLocalPlayerSubsystem->AddMappingContext(InputMappingContext, 1);
-			}
-		}
-	}
 	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
 
 	Gun = GetWorld()->SpawnActor<AGun>(GunClass);
@@ -66,32 +53,6 @@ void APlayerCharacter::Tick(float DeltaTime)
 void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
-
-	if (UEnhancedInputComponent* Input = CastChecked<UEnhancedInputComponent>(PlayerInputComponent))
-	{
-		if (MoveAction)
-		{
-			Input->BindAction(MoveAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Move);
-		}
-		if (JumpAction)
-		{
-			Input->BindAction(JumpAction, ETriggerEvent::Triggered, this, &ACharacter::Jump);
-		}
-		if (LookAction)
-		{
-			Input->BindAction(LookAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Look);
-		}
-		if (DashAction)
-		{
-			Input->BindAction(DashAction, ETriggerEvent::Started, this, &APlayerCharacter::OnDash);
-			Input->BindAction(DashAction, ETriggerEvent::Completed, this, &APlayerCharacter::OffDash);
-		}
-		if (ShootAction)
-		{
-			Input->BindAction(ShootAction, ETriggerEvent::Triggered, this, &APlayerCharacter::StartShoot);
-		}
-	}
 }
 
 float APlayerCharacter::GetBlendWeightForMovement() const
@@ -126,10 +87,8 @@ float APlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Damag
 	return DamageToApply;
 }
 
-void APlayerCharacter::Move(const FInputActionInstance& Instance)
+void APlayerCharacter::Move(FVector2D Vector)
 {
-	FVector2D Value = Instance.GetValue().Get<FVector2D>();
-
 	FRotator Rotation = GetController()->GetControlRotation();
 	// Use only yaw
 	Rotation.Pitch = 0.0f;
@@ -138,16 +97,14 @@ void APlayerCharacter::Move(const FInputActionInstance& Instance)
 	FVector ForwardDirection = FRotationMatrix(Rotation).GetUnitAxis(EAxis::X);
 	FVector RightDirection = FRotationMatrix(Rotation).GetUnitAxis(EAxis::Y);
 
-	AddMovementInput(ForwardDirection, Value.Y);
-	AddMovementInput(RightDirection, Value.X);
+	AddMovementInput(ForwardDirection, Vector.Y);
+	AddMovementInput(RightDirection, Vector.X);
 }
 
-void APlayerCharacter::Look(const FInputActionInstance& Instance)
+void APlayerCharacter::Look(FVector2D Vector)
 {
-	FVector2D Value = Instance.GetValue().Get<FVector2D>();
-
-	AddControllerPitchInput(-Value.Y * CameraRotationWithMouseSpeed);
-	AddControllerYawInput(Value.X * CameraRotationWithMouseSpeed);
+	AddControllerPitchInput(-Vector.Y * CameraRotationWithMouseSpeed);
+	AddControllerYawInput(Vector.X * CameraRotationWithMouseSpeed);
 }
 
 void APlayerCharacter::OnDash()

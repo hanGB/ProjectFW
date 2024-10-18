@@ -5,8 +5,6 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 
-#include "InputAction.h"
-
 #include "PlayerCharacter.generated.h"
 
 UCLASS()
@@ -42,15 +40,14 @@ public:
 	float GetHealth() const;
 	float GetMaxHealth() const;
 
-private:
-	// Input Callback
-	void Move(const FInputActionInstance& Instance);
-	void Look(const FInputActionInstance& Instance);
+	// Movement
+	void Move(FVector2D Vector);
+	void Look(FVector2D Vector);
 	void OnDash();
 	void OffDash();
-
 	void StartShoot();
 
+private:
 	UFUNCTION(BlueprintCallable)
 	void EndShoot();
 
@@ -66,20 +63,6 @@ private:
 	float CameraOffsetInAttackMode = 40.0f;
 
 	// Input
-	UPROPERTY(EditDefaultsOnly, Category = "Input")
-	class UInputMappingContext* InputMappingContext;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Input")
-	UInputAction* MoveAction;
-	UPROPERTY(EditDefaultsOnly, Category = "Input")
-	UInputAction* JumpAction;
-	UPROPERTY(EditDefaultsOnly, Category = "Input")
-	UInputAction* LookAction;
-	UPROPERTY(EditDefaultsOnly, Category = "Input")
-	UInputAction* DashAction;
-	UPROPERTY(EditDefaultsOnly, Category = "Input")
-	UInputAction* ShootAction;
-
 	UPROPERTY(EditAnywhere, Category = "Input")
 	float CameraRotationWithMouseSpeed = 0.5f;
 

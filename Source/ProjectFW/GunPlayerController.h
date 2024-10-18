@@ -5,11 +5,13 @@
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
 
+#include "InputAction.h"
+
 #include "GunPlayerController.generated.h"
 
-/**
- * 
- */
+
+class APlayerCharacter;
+
 UCLASS()
 class PROJECTFW_API AGunPlayerController : public APlayerController
 {
@@ -41,10 +43,21 @@ protected:
 	UUserWidget* GetGunHUD() const;
 
 private:
+	// Input Callback
+	void Move(const FInputActionInstance& Instance);
+	void Look(const FInputActionInstance& Instance);
+	void Jump();
+	void OnDash();
+	void OffDash();
+	void StartShoot();
 	void ChangeMode();
 
+	void UseSlot1();
+	void UseSlot2();
+	void UseSlot3();
+	
+	void ChangeCharacter(int index);
 	void SetMode();
-
 	// UI
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<class UUserWidget> GunHUDClass;
@@ -56,7 +69,31 @@ private:
 	class UInputMappingContext* InputMappingContext;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
-	class UInputAction* ChangeModeAction;
+	UInputAction* MoveAction;
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	UInputAction* JumpAction;
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	UInputAction* LookAction;
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	UInputAction* DashAction;
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	UInputAction* ShootAction;
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	UInputAction* ChangeModeAction;
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	UInputAction* UseSlot1Action;
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	UInputAction* UseSlot2Action;
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	UInputAction* UseSlot3Action;
+
+
+	// Character
+	UPROPERTY(EditDefaultsOnly, Category = "Character")
+	TArray<TSubclassOf<class APlayerCharacter>>  PlayerCharacterClasses;
+	UPROPERTY()
+	TArray<APlayerCharacter*>  PlayerCharacters;
 
 	bool bAttackMode = true;
+	int CurrentPlayer = 0;
 };
