@@ -79,4 +79,11 @@ private:
 	UClass* NormalModeAnimationBP;
 
 	bool bAttackMode = false;
+
+	// Gun
+	UPROPERTY(EditDefaultsOnly, Category = "Gun")
+	TSubclassOf<class AGun> GunClass;
+
+	UPROPERTY()
+	class AGun* Gun;
 };

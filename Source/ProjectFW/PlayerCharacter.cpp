@@ -8,6 +8,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Gun.h"
 
 // Sets default values
 APlayerCharacter::APlayerCharacter()
@@ -42,6 +43,12 @@ void APlayerCharacter::BeginPlay()
 	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
 	GetMesh()->AddLocalOffset(FVector(0.0f, 0.0f, 5.0f));
 
+	Gun = GetWorld()->SpawnActor<AGun>(GunClass);
+	if (Gun)
+	{
+		Gun->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, TEXT("gun_socket"));
+		Gun->SetOwner(this);
+	}
 	ChangeMode();
 }
 
@@ -140,6 +147,10 @@ void APlayerCharacter::ChangeMode()
 				SpringArm->SetRelativeLocation(FVector(0.f, CameraOffsetInAttackMode, CameraHeight));
 			}
 		}
+		if (Gun)
+		{
+			Gun->Draw(true);
+		}
 	}
 	else
 	{
@@ -155,6 +166,10 @@ void APlayerCharacter::ChangeMode()
 			{
 				SpringArm->SetRelativeLocation(FVector(0.f, 0.f, CameraHeight));
 			}
+		}
+		if (Gun)
+		{
+			Gun->Draw(false);
 		}
 	}
 }
