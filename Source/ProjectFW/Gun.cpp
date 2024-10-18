@@ -76,3 +76,9 @@ void AGun::PullTrigger()
 	}
 }
 
+bool AGun::IsDrawed() const
+{
+	// 메쉬가 보일 경우 꺼내진 상태
+	return Mesh->GetVisibleFlag();
+}
+

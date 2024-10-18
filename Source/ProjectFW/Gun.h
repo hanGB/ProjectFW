@@ -26,6 +26,8 @@ public:
 	void Draw(bool bDraw);
 	void PullTrigger();
 
+	bool IsDrawed() const;
+
 private:
 	USceneComponent* Root;
 

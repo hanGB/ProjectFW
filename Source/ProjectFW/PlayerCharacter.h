@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+
 #include "InputAction.h"
 
 #include "PlayerCharacter.generated.h"
@@ -36,11 +37,13 @@ public:
 
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 
+	void SetMode(bool bAttackMode);
+
+
 private:
 	// Input Callback
 	void Move(const FInputActionInstance& Instance);
 	void Look(const FInputActionInstance& Instance);
-	void Draw();	
 	void OnDash();
 	void OffDash();
 
@@ -49,17 +52,15 @@ private:
 	UFUNCTION(BlueprintCallable)
 	void EndShoot();
 
-	void ChangeMode();
-
 	// Camera
 	UPROPERTY(VisibleDefaultsOnly)
 	class USpringArmComponent* SpringArm;
 	UPROPERTY(VisibleDefaultsOnly)
 	class UCameraComponent* Camera;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Camera")
+	UPROPERTY(EditAnywhere, Category = "Camera")
 	float CameraHeight = 55.0f;
-	UPROPERTY(EditDefaultsOnly, Category = "Camera")
+	UPROPERTY(EditAnywhere, Category = "Camera")
 	float CameraOffsetInAttackMode = 40.0f;
 
 	// Input
@@ -72,8 +73,6 @@ private:
 	UInputAction* JumpAction;
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	UInputAction* LookAction;
-	UPROPERTY(EditDefaultsOnly, Category = "Input")
-	UInputAction* DrawAction;
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	UInputAction* DashAction;
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
@@ -95,8 +94,11 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Animation")
 	UAnimMontage* FireAnimMontage;
 
-	UPROPERTY(EditAnywhere, Category = "Mode")
-	bool bAttackMode = false;
+	// Mesh
+	UPROPERTY(EditAnywhere, Category = "Mesh")
+	float AttackModeHeight = -93.0f;
+	UPROPERTY(EditAnywhere, Category = "Mesh")
+	float NormalModeHeight = -98.0f;
 
 	// Gun
 	UPROPERTY(EditDefaultsOnly, Category = "Gun")

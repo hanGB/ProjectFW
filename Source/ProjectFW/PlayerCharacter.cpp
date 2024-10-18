@@ -35,13 +35,11 @@ void APlayerCharacter::BeginPlay()
 		{
 			if (InputMappingContext)
 			{
-				EnhancedInputLocalPlayerSubsystem->AddMappingContext(InputMappingContext, 0);
+				EnhancedInputLocalPlayerSubsystem->AddMappingContext(InputMappingContext, 1);
 			}
 		}
 	}
-
 	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
-	GetMesh()->AddLocalOffset(FVector(0.0f, 0.0f, 5.0f));
 
 	Gun = GetWorld()->SpawnActor<AGun>(GunClass);
 	if (Gun)
@@ -51,7 +49,8 @@ void APlayerCharacter::BeginPlay()
 	}
 
 	GetMesh()->SetAnimationMode(EAnimationMode::AnimationBlueprint);
-	ChangeMode();
+
+	SetMode(true);
 
 	Health = MaxHealth;
 }
@@ -82,10 +81,6 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 		if (LookAction)
 		{
 			Input->BindAction(LookAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Look);
-		}
-		if (DrawAction)
-		{
-			Input->BindAction(DrawAction, ETriggerEvent::Started, this, &APlayerCharacter::Draw);
 		}
 		if (DashAction)
 		{
@@ -155,12 +150,6 @@ void APlayerCharacter::Look(const FInputActionInstance& Instance)
 	AddControllerYawInput(Value.X * CameraRotationWithMouseSpeed);
 }
 
-void APlayerCharacter::Draw()
-{
-	bAttackMode = !bAttackMode;
-	ChangeMode();
-}
-
 void APlayerCharacter::OnDash()
 {
 	GetCharacterMovement()->MaxWalkSpeed = RunSpeed;
@@ -173,21 +162,25 @@ void APlayerCharacter::OffDash()
 
 void APlayerCharacter::StartShoot()
 {
-	// Only Shoot in Attack Mode
-	if (bAttackMode)
+	if (bShooting)
 	{
-		if (bShooting)
-		{
-			return;
-		}
-		if (Gun)
+		return;
+	}
+
+	// Only Shoot in Attack Mode
+	if (Gun)
+	{
+		if (Gun->IsDrawed())
 		{
 			Gun->PullTrigger();
+			if (FireAnimMontage)
+			{
+				PlayAnimMontage(FireAnimMontage);
+			}
+			bShooting = true;
 		}
-		PlayAnimMontage(FireAnimMontage);
-
-		bShooting = true;
 	}
+	
 }
 
 void APlayerCharacter::EndShoot()
@@ -196,7 +189,7 @@ void APlayerCharacter::EndShoot()
 	bShooting = false;
 }
 
-void APlayerCharacter::ChangeMode()
+void APlayerCharacter::SetMode(bool bAttackMode)
 {
 	if (bAttackMode)
 	{
@@ -205,8 +198,8 @@ void APlayerCharacter::ChangeMode()
 		if (AttackModeAnimationBP)
 		{
 			GetMesh()->SetAnimInstanceClass(AttackModeAnimationBP);
-			GetMesh()->AddLocalOffset(FVector(0.0f, 0.0f, 5.0f));
-			
+			FVector MeshLocation = GetMesh()->GetRelativeLocation();
+			GetMesh()->SetRelativeLocation(FVector(MeshLocation.X, MeshLocation.Y, AttackModeHeight));
 			if (SpringArm)
 			{
 				SpringArm->SetRelativeLocation(FVector(0.f, CameraOffsetInAttackMode, CameraHeight));
@@ -226,8 +219,8 @@ void APlayerCharacter::ChangeMode()
 		if (NormalModeAnimationBP)
 		{
 			GetMesh()->SetAnimInstanceClass(NormalModeAnimationBP);
-			GetMesh()->AddLocalOffset(FVector(0.0f, 0.0f, -5.0f));
-
+			FVector MeshLocation = GetMesh()->GetRelativeLocation();
+			GetMesh()->SetRelativeLocation(FVector(MeshLocation.X, MeshLocation.Y, NormalModeHeight));
 			if (SpringArm)
 			{
 				SpringArm->SetRelativeLocation(FVector(0.f, 0.f, CameraHeight));
