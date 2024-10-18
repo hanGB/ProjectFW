@@ -31,4 +31,15 @@ private:
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	USkeletalMeshComponent* Mesh;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Effect")
+	class UNiagaraSystem* MuzzleEffect;
+	UPROPERTY(EditDefaultsOnly, Category = "Effect")
+	class UNiagaraSystem* ImpactEffect;
+
+	UPROPERTY(EditAnywhere, Category = "Stat")
+	float MaxRange = 3000.0f;
+
+	UPROPERTY(EditAnywhere, Category = "Stat")
+	float Damage = 20.0f;
 };

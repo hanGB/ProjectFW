@@ -3,6 +3,11 @@
 
 #include "Gun.h"
 
+#include "Kismet/GameplayStatics.h"
+#include "NiagaraSystem.h"
+#include "NiagaraComponent.h"
+#include "NiagaraFunctionLibrary.h"
+
 // Sets default values
 AGun::AGun()
 {
@@ -37,6 +42,37 @@ void AGun::Draw(bool bDraw)
 
 void AGun::PullTrigger()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Pull Trigger!!!"));
+	if (MuzzleEffect)
+	{
+		UNiagaraFunctionLibrary::SpawnSystemAttached(MuzzleEffect, Mesh, NAME_None, FVector(0.f), FRotator(0.f), EAttachLocation::Type::KeepRelativeOffset, true);
+	}
+
+	if (APawn* OwnerPawn = Cast<APawn>(GetOwner()))
+	{
+		if (AController* OwnerController = OwnerPawn->GetController())
+		{
+			FVector Location;
+			FRotator Rotation;
+			OwnerController->GetPlayerViewPoint(Location, Rotation);
+
+			FVector End = Location + Rotation.Vector() * MaxRange;
+
+			FHitResult HitResult;
+			if (GetWorld()->LineTraceSingleByChannel(HitResult, Location, End, ECollisionChannel::ECC_GameTraceChannel1))
+			{
+				if (ImpactEffect)
+				{
+					FVector ShootDirection = -Rotation.Vector();
+					UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ImpactEffect, HitResult.Location, ShootDirection.Rotation());
+
+					if (AActor* HitActor = HitResult.GetActor())
+					{
+						FPointDamageEvent DamageEvent(Damage, HitResult, ShootDirection, nullptr);
+						HitActor->TakeDamage(Damage, DamageEvent, OwnerController, this);
+					}
+				}
+			}
+		}
+	}
 }
 

@@ -31,6 +31,11 @@ public:
 	UFUNCTION(BlueprintPure)
 	float GetBlendWeightForMovement() const;
 
+	UFUNCTION(BlueprintPure)
+	bool IsDead() const;
+
+	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+
 private:
 	// Input Callback
 	void Move(const FInputActionInstance& Instance);
@@ -90,11 +95,17 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Animation")
 	UAnimMontage* FireAnimMontage;
 
+	UPROPERTY(EditAnywhere, Category = "Mode")
 	bool bAttackMode = false;
 
 	// Gun
 	UPROPERTY(EditDefaultsOnly, Category = "Gun")
 	TSubclassOf<class AGun> GunClass;
+
+	UPROPERTY(EditAnywhere, Category = "Stat")
+	float MaxHealth = 100.0f;
+
+	float Health = 100.0f;
 
 	UPROPERTY()
 	class AGun* Gun;

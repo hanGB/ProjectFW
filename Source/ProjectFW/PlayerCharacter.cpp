@@ -52,6 +52,8 @@ void APlayerCharacter::BeginPlay()
 
 	GetMesh()->SetAnimationMode(EAnimationMode::AnimationBlueprint);
 	ChangeMode();
+
+	Health = MaxHealth;
 }
 
 // Called every frame
@@ -99,7 +101,7 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 float APlayerCharacter::GetBlendWeightForMovement() const
 {
-	if (bShooting)
+	if (bShooting && GetCharacterMovement()->MaxWalkSpeed == RunSpeed)
 	{
 		return 1.0f;
 	}
@@ -107,6 +109,26 @@ float APlayerCharacter::GetBlendWeightForMovement() const
 	{
 		return 0.0f;
 	}
+}
+
+bool APlayerCharacter::IsDead() const
+{
+	return Health <= 0.0f;
+}
+
+float APlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	float DamageToApply = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+
+	if (DamageCauser->GetOwner() != this)
+	{
+		DamageToApply = FMath::Min(DamageToApply, Health);
+		Health -= DamageToApply;
+	}
+
+	UE_LOG(LogTemp, Warning, TEXT("Health: %f"), Health);
+
+	return DamageToApply;
 }
 
 void APlayerCharacter::Move(const FInputActionInstance& Instance)
