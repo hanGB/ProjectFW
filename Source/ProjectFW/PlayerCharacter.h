@@ -38,6 +38,11 @@ public:
 	void SetMode(bool bAttackMode);
 
 	class UStatComponent* GetStat() const;
+	float GetAmmoRate() const;
+	bool GetIsReloading() const;
+
+	void BeginRest();
+	void Rest(float DeltaTime);
 
 	// Movement
 	void Move(FVector2D Vector);

@@ -21,15 +21,27 @@ void AGunPlayerController::Tick(float DeltaTime)
 {
 	if (APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(GetPawn()))
 	{
-		UpdateMainHealthBar(PlayerCharacter->GetStat()->GetHealth(), PlayerCharacter->GetStat()->GetMaxHealth());
-		UpdateAmmoBar(1.0f, PlayerCharacter->GetStat()->GetAttributeColor());
+		if (UStatComponent* Stat = PlayerCharacter->GetStat())
+		{
+			UpdateMainHealthBar(Stat->GetHealth(), Stat->GetMaxHealth());
+			UpdateMainAmmoBar(PlayerCharacter->GetAmmoRate(), Stat->GetAttributeColor());
+		}
+		ShowReloadingText(PlayerCharacter->GetIsReloading());
 
 		for (int i = 0; i < PlayersInParty.Num(); ++i)
 		{
 			if (PlayersInParty[i])
 			{
-				UpdateSlotHealth(i, PlayersInParty[i]->GetStat()->GetHealth() / PlayersInParty[i]->GetStat()->GetMaxHealth());
-				UpdateSlotColor(i, PlayersInParty[i]->GetStat()->GetAttributeColor() * 0.5f);
+				if (UStatComponent* Stat = PlayersInParty[i]->GetStat())
+				{
+					UpdateSlotHealth(i, Stat->GetHealth() / Stat->GetMaxHealth());
+					UpdateSlotAmmo(i, PlayersInParty[i]->GetAmmoRate());
+					UpdateSlotColor(i, Stat->GetAttributeColor() * 0.5f);
+				}
+				if (i != CurrentPlayer)
+				{
+					PlayersInParty[i]->Rest(DeltaTime);
+				}
 			}
 		}
 	}
@@ -217,6 +229,7 @@ void AGunPlayerController::ChangeCharacter(int index)
 			if (PlayersInParty.Num() > CurrentPlayer && CurrentPlayer >= 0)
 			{
 				PlayersInParty[CurrentPlayer]->SetActorLocation(DummyLocation);
+				PlayersInParty[CurrentPlayer]->BeginRest();
 			}
 			CurrentPlayer = index;
 

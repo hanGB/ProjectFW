@@ -134,12 +134,15 @@ void APlayerCharacter::StartShoot()
 	{
 		if (Gun->IsDrawed())
 		{
-			Gun->PullTrigger();
-			if (FireAnimMontage)
+			bool bShooted = Gun->PullTrigger();
+			if (bShooted)
 			{
-				PlayAnimMontage(FireAnimMontage);
-			}
-			bShooting = true;
+				if (FireAnimMontage)
+				{
+					PlayAnimMontage(FireAnimMontage);
+				}
+				bShooting = true;
+			}		
 		}
 	}
 	
@@ -199,4 +202,38 @@ void APlayerCharacter::SetMode(bool bAttackMode)
 UStatComponent* APlayerCharacter::GetStat() const
 {
 	return Stat;
+}
+
+float APlayerCharacter::GetAmmoRate() const
+{
+	if (Gun)
+	{
+		return Gun->GetAmmoRate();
+	}
+	return 0.0f;
+}
+
+bool APlayerCharacter::GetIsReloading() const
+{
+	if (Gun)
+	{
+		return Gun->IsReloading();
+	}
+	return false;
+}
+
+void APlayerCharacter::BeginRest()
+{
+	if (Gun)
+	{
+		Gun->ResetRestTimer();
+	}
+}
+
+void APlayerCharacter::Rest(float DeltaTime)
+{
+	if (Gun)
+	{
+		Gun->AddAmmoWhenRest(DeltaTime);
+	}
 }

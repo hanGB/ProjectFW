@@ -26,6 +26,8 @@ void AGun::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	Ammo = MaxAmmo;
+	bReloading = false;
 }
 
 // Called every frame
@@ -33,6 +35,10 @@ void AGun::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (bReloading)
+	{
+		Reload(DeltaTime);
+	}
 }
 
 void AGun::Draw(bool bDraw)
@@ -40,8 +46,13 @@ void AGun::Draw(bool bDraw)
 	Mesh->SetVisibility(bDraw);
 }
 
-void AGun::PullTrigger()
+bool AGun::PullTrigger()
 {
+	if (bReloading)
+	{
+		return false;
+	}
+
 	if (MuzzleEffect)
 	{
 		UNiagaraFunctionLibrary::SpawnSystemAttached(MuzzleEffect, Mesh, NAME_None, FVector(0.f), FRotator(0.f), EAttachLocation::Type::KeepRelativeOffset, true);
@@ -74,11 +85,67 @@ void AGun::PullTrigger()
 			}
 		}
 	}
+
+	Ammo--;
+	if (Ammo == 0)
+	{
+		ReloadState = 0.0f;
+		bReloading = true;
+	}
+
+	return true;
 }
 
 bool AGun::IsDrawed() const
 {
 	// 메쉬가 보일 경우 꺼내진 상태
 	return Mesh->GetVisibleFlag();
+}
+
+float AGun::GetAmmoRate() const
+{
+	if (bReloading)
+	{
+		return ReloadState;
+	}
+	else
+	{
+		return (float)Ammo / (float)MaxAmmo;
+	}
+}
+
+void AGun::AddAmmoWhenRest(float DeltaTime)
+{
+	RestTimer += DeltaTime;
+	if (RestAmmoTime > RestTimer) return;
+
+	RestTimer = 0.0f;
+	if (Ammo < MaxAmmo)
+	{
+		Ammo++;
+	}
+}
+
+void AGun::ResetRestTimer()
+{
+	RestTimer = 0.0f;
+}
+
+bool AGun::IsReloading() const
+{
+	return bReloading;
+}
+
+void AGun::Reload(float DeltaTime)
+{
+	ReloadState += DeltaTime * (1.0f / ReloadTime);
+
+	if (ReloadState >= 1.0f)
+	{
+		Ammo = MaxAmmo;
+
+		ReloadState = 0.0f;
+		bReloading = false;
+	}
 }
 

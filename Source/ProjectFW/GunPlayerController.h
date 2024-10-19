@@ -33,11 +33,16 @@ protected:
 	UFUNCTION(BlueprintImplementableEvent)
 	void UpdateMainHealthBar(float Health, float MaxHealth);
 	UFUNCTION(BlueprintImplementableEvent)
-	void UpdateAmmoBar(float percent, FLinearColor Color);
+	void UpdateMainAmmoBar(float percent, FLinearColor Color);
 	UFUNCTION(BlueprintImplementableEvent)
 	void UpdateSlotHealth(int slot, float percent);
 	UFUNCTION(BlueprintImplementableEvent)
+	void UpdateSlotAmmo(int slot, float percent);
+	UFUNCTION(BlueprintImplementableEvent)
 	void UpdateSlotColor (int slot, FLinearColor Color);
+	UFUNCTION(BlueprintImplementableEvent)
+	void ShowReloadingText(bool bShow);
+
 
 	UFUNCTION(BlueprintPure)
 	UUserWidget* GetGunHUD() const;

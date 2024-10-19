@@ -24,11 +24,18 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	void Draw(bool bDraw);
-	void PullTrigger();
+	bool PullTrigger();
 
 	bool IsDrawed() const;
 
+	float GetAmmoRate() const;
+	void AddAmmoWhenRest(float DeltaTime);
+	void ResetRestTimer();
+	bool IsReloading() const;
+
 private:
+	void Reload(float DeltaTime);
+
 	USceneComponent* Root;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
@@ -39,9 +46,21 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Effect")
 	class UNiagaraSystem* ImpactEffect;
 
-	UPROPERTY(EditAnywhere, Category = "Stat")
+	// Spec
+	UPROPERTY(EditAnywhere, Category = "Spec")
 	float MaxRange = 3000.0f;
-
-	UPROPERTY(EditAnywhere, Category = "Stat")
+	UPROPERTY(EditAnywhere, Category = "Spec")
 	float Damage = 50.0f;
+	UPROPERTY(EditAnywhere, Category = "Spec")
+	int MaxAmmo = 50;
+	UPROPERTY(EditAnywhere, Category = "Spec")
+	float ReloadTime = 10.0f;
+	UPROPERTY(EditAnywhere, Category = "Spec")
+	float RestAmmoTime = 1.0f;
+
+	// State
+	int Ammo = 50;
+	bool bReloading = false;
+	float ReloadState = 0.0f;
+	float RestTimer = 0.0f;
 };
