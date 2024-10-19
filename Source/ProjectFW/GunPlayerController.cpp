@@ -7,6 +7,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
 #include "PlayerCharacter.h"
+#include "StatComponent.h"
 
 AGunPlayerController::AGunPlayerController()
 {
@@ -25,15 +26,15 @@ void AGunPlayerController::Tick(float DeltaTime)
 
 	if (APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(GetPawn()))
 	{
-		UpdateMainHealthBar(PlayerCharacter->GetHealth(), PlayerCharacter->GetMaxHealth());
-		UpdateAmmoBar(1.0f, FLinearColor(1.0f, 0.0f, 0.0f));
+		UpdateMainHealthBar(PlayerCharacter->GetStat()->GetHealth(), PlayerCharacter->GetStat()->GetMaxHealth());
+		UpdateAmmoBar(1.0f, PlayerCharacter->GetStat()->GetAttributeColor());
 
 		for (int i = 0; i < PlayerCharacters.Num(); ++i)
 		{
 			if (PlayerCharacters[i])
 			{
-				UpdateSlotHealth(i, PlayerCharacters[i]->GetHealth() / PlayerCharacters[i]->GetMaxHealth());
-				UpdateSlotColor(i, FLinearColor(1.0f, 0.0f, 0.0f) * 0.5f);
+				UpdateSlotHealth(i, PlayerCharacters[i]->GetStat()->GetHealth() / PlayerCharacters[i]->GetStat()->GetMaxHealth());
+				UpdateSlotColor(i, PlayerCharacters[i]->GetStat()->GetAttributeColor() * 0.5f);
 			}
 		}
 	}

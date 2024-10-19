@@ -7,6 +7,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Gun.h"
+#include "StatComponent.h"
 
 // Sets default values
 APlayerCharacter::APlayerCharacter()
@@ -19,6 +20,8 @@ APlayerCharacter::APlayerCharacter()
 
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Follow Camera"));
 	Camera->SetupAttachment(SpringArm);
+
+	Stat = CreateDefaultSubobject<UStatComponent>(TEXT("Stat"));
 }
 
 // Called when the game starts or when spawned
@@ -38,8 +41,6 @@ void APlayerCharacter::BeginPlay()
 	GetMesh()->SetAnimationMode(EAnimationMode::AnimationBlueprint);
 
 	SetMode(true);
-
-	Health = MaxHealth;
 }
 
 // Called every frame
@@ -69,7 +70,7 @@ float APlayerCharacter::GetBlendWeightForMovement() const
 
 bool APlayerCharacter::IsDead() const
 {
-	return Health <= 0.0f;
+	return Stat->IsDead();
 }
 
 float APlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
@@ -78,11 +79,15 @@ float APlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Damag
 
 	if (DamageCauser->GetOwner() != this)
 	{
-		DamageToApply = FMath::Min(DamageToApply, Health);
-		Health -= DamageToApply;
-	}
+		EAttribute Attribute = EAttribute::Non;
+		if (APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(DamageCauser->GetOwner()))
+		{
+			Attribute = PlayerCharacter->GetStat()->GetAttribute();
+			DamageToApply = PlayerCharacter->GetStat()->CaculateDamageCaused(DamageToApply);
+		}
 
-	UE_LOG(LogTemp, Warning, TEXT("Health: %f"), Health);
+		DamageToApply = Stat->CaculateDamageReceivedAndApply(DamageToApply, Attribute);
+	}
 
 	return DamageToApply;
 }
@@ -191,12 +196,7 @@ void APlayerCharacter::SetMode(bool bAttackMode)
 	}
 }
 
-float APlayerCharacter::GetHealth() const
+UStatComponent* APlayerCharacter::GetStat() const
 {
-	return Health;
-}
-
-float APlayerCharacter::GetMaxHealth() const
-{
-	return MaxHealth;
+	return Stat;
 }

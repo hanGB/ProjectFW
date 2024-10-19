@@ -37,8 +37,7 @@ public:
 
 	void SetMode(bool bAttackMode);
 
-	float GetHealth() const;
-	float GetMaxHealth() const;
+	class UStatComponent* GetStat() const;
 
 	// Movement
 	void Move(FVector2D Vector);
@@ -90,9 +89,7 @@ private:
 	TSubclassOf<class AGun> GunClass;
 
 	UPROPERTY(EditAnywhere, Category = "Stat")
-	float MaxHealth = 1000.0f;
-
-	float Health = 1000.0f;
+	class UStatComponent* Stat;
 
 	UPROPERTY()
 	class AGun* Gun;
