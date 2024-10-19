@@ -34,7 +34,7 @@ void AGunPlayerController::Tick(float DeltaTime)
 			{
 				if (UStatComponent* Stat = PlayersInParty[i]->GetStat())
 				{
-					UpdateSlotHealth(i, Stat->GetHealth() / Stat->GetMaxHealth());
+					UpdateSlotHealth(i, Stat->GetHealthRate());
 					UpdateSlotAmmo(i, PlayersInParty[i]->GetAmmoRate());
 					UpdateSlotColor(i, Stat->GetAttributeColor() * 0.5f);
 				}
@@ -60,10 +60,13 @@ void AGunPlayerController::BeginPlay()
 		}
 	}
 
-	GunHUD = CreateWidget(this, GunHUDClass);
-	if (GunHUD)
+	if (GunHUDClass)
 	{
-		GunHUD->AddToViewport();
+		GunHUD = CreateWidget(this, GunHUDClass);
+		if (GunHUD)
+		{
+			GunHUD->AddToViewport();
+		}
 	}
 
 	for (int i = 0; i < PlayerCharacterClasses.Num(); ++i)
