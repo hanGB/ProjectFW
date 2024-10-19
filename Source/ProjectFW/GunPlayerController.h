@@ -92,8 +92,9 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Character")
 	TArray<TSubclassOf<class APlayerCharacter>>  PlayerCharacterClasses;
 	UPROPERTY()
-	TArray<APlayerCharacter*>  PlayerCharacters;
+	TArray<APlayerCharacter*>  PlayersInParty;
 
 	bool bAttackMode = true;
-	int CurrentPlayer = 0;
+	int CurrentPlayer = -1;
+	FVector DummyLocation = FVector(-999.0f, -999.0f, -999.0f);
 };

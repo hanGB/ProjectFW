@@ -14,27 +14,22 @@ AGunPlayerController::AGunPlayerController()
 	PrimaryActorTick.bCanEverTick = true;
 
 	PlayerCharacterClasses.Init(nullptr, 3);
-	PlayerCharacters.Init(nullptr, 3);
+	PlayersInParty.Init(nullptr, 3);
 }
 
 void AGunPlayerController::Tick(float DeltaTime)
 {
-	if (!PlayerCharacters[0])
-	{
-		PlayerCharacters[0] = Cast<APlayerCharacter>(GetPawn());
-	}
-
 	if (APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(GetPawn()))
 	{
 		UpdateMainHealthBar(PlayerCharacter->GetStat()->GetHealth(), PlayerCharacter->GetStat()->GetMaxHealth());
 		UpdateAmmoBar(1.0f, PlayerCharacter->GetStat()->GetAttributeColor());
 
-		for (int i = 0; i < PlayerCharacters.Num(); ++i)
+		for (int i = 0; i < PlayersInParty.Num(); ++i)
 		{
-			if (PlayerCharacters[i])
+			if (PlayersInParty[i])
 			{
-				UpdateSlotHealth(i, PlayerCharacters[i]->GetStat()->GetHealth() / PlayerCharacters[i]->GetStat()->GetMaxHealth());
-				UpdateSlotColor(i, PlayerCharacters[i]->GetStat()->GetAttributeColor() * 0.5f);
+				UpdateSlotHealth(i, PlayersInParty[i]->GetStat()->GetHealth() / PlayersInParty[i]->GetStat()->GetMaxHealth());
+				UpdateSlotColor(i, PlayersInParty[i]->GetStat()->GetAttributeColor() * 0.5f);
 			}
 		}
 	}
@@ -59,14 +54,21 @@ void AGunPlayerController::BeginPlay()
 		GunHUD->AddToViewport();
 	}
 
-	for (int i = 0; i < PlayerCharacterClasses.Num() -1; ++i)
+	for (int i = 0; i < PlayerCharacterClasses.Num(); ++i)
 	{
-		if (PlayerCharacterClasses[i + 1])
+		if (PlayerCharacterClasses[i])
 		{
-			PlayerCharacters[i + 1] = GetWorld()->SpawnActor<APlayerCharacter>(
-				PlayerCharacterClasses[i + 1], FVector(300.0f + 30.0f* i, 1700.0f, 50.0f), FRotator(0.0f, 0.0f, 0.0f));
+			FActorSpawnParameters SpawnParameters = {};
+			SpawnParameters.bNoFail = true;
+
+			PlayersInParty[i] = GetWorld()->SpawnActor<APlayerCharacter>(PlayerCharacterClasses[i], DummyLocation, FRotator(0.0f, 0.0f, 0.0f), SpawnParameters);
 		}
 	}
+	
+	// 0번 캐릭터(slot 1)로 변경 후 기본으로 생성된 더미 Pawn 삭제
+	APawn* Dummy = GetPawn();
+	ChangeCharacter(0);
+	Dummy->Destroy();
 }
 
 void AGunPlayerController::SetupInputComponent()
@@ -198,19 +200,24 @@ void AGunPlayerController::ChangeCharacter(int index)
 		return;
 	}
 
-	if (PlayerCharacters.Num() > index)
+	if (PlayersInParty.Num() > index)
 	{
-		if (PlayerCharacters[index])
+		if (PlayersInParty[index])
 		{
+			// 변경할 캐릭터를 현재 폰의 위치로 이동
 			FVector Location = GetPawn()->GetActorLocation();
 			FRotator Rotation = GetPawn()->GetActorRotation();
-
-			PlayerCharacters[index]->SetActorLocation(GetPawn()->GetActorLocation());
-			PlayerCharacters[index]->SetActorRotation(Rotation);
+			PlayersInParty[index]->SetActorLocation(GetPawn()->GetActorLocation());
+			PlayersInParty[index]->SetActorRotation(Rotation);
 
 			UnPossess();
-			Possess(PlayerCharacters[index]);
+			Possess(PlayersInParty[index]);
 
+			// 현재 폰을 더미 위치로 이동
+			if (PlayersInParty.Num() > CurrentPlayer && CurrentPlayer >= 0)
+			{
+				PlayersInParty[CurrentPlayer]->SetActorLocation(DummyLocation);
+			}
 			CurrentPlayer = index;
 
 			SetMode();

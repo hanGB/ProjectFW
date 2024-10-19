@@ -115,7 +115,7 @@ FLinearColor UStatComponent::GetAttributeColor() const
 		return FLinearColor(0.0f, 1.0f, 0.0f);
 	}
 
-	return FLinearColor(0.0f, 0.0f, 0.0f);
+	return FLinearColor(0.5f, 0.5f, 0.5f);
 }
 
 float UStatComponent::CaculateDamageCaused(float Damage) const
