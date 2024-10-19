@@ -32,6 +32,24 @@ void UStatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 	// ...
 }
 
+FLinearColor UStatComponent::AttributeColor(EAttribute Type)
+{
+	if (Type == EAttribute::Fire)
+	{
+		return FLinearColor(1.0f, 0.0f, 0.0f);
+	}
+	else if (Type == EAttribute::Ice)
+	{
+		return FLinearColor(0.0f, 0.0f, 1.0f);
+	}
+	else if (Type == EAttribute::Wind)
+	{
+		return FLinearColor(0.0f, 1.0f, 0.0f);
+	}
+
+	return FLinearColor(0.5f, 0.5f, 0.5f);
+}
+
 int UStatComponent::GetLevel() const
 {
 	return Level;
@@ -102,20 +120,7 @@ float UStatComponent::GetHealthRate() const
 
 FLinearColor UStatComponent::GetAttributeColor() const
 {
-	if (Attribute == EAttribute::Fire)
-	{
-		return FLinearColor(1.0f, 0.0f, 0.0f);
-	}
-	else if (Attribute == EAttribute::Ice)
-	{
-		return FLinearColor(0.0f, 0.0f, 1.0f);
-	}
-	else if (Attribute == EAttribute::Wind)
-	{
-		return FLinearColor(0.0f, 1.0f, 0.0f);
-	}
-
-	return FLinearColor(0.5f, 0.5f, 0.5f);
+	return AttributeColor(Attribute);
 }
 
 float UStatComponent::CaculateDamageCaused(float Damage) const

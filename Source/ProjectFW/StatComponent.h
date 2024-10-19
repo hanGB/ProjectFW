@@ -20,7 +20,6 @@ struct FStatData
 {
 	GENERATED_BODY()
 
-public:
 	FStatData() {}
 
 	FStatData(float Health, float Attack, float Defense, float Exp)
@@ -57,6 +56,8 @@ protected:
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
+	static FLinearColor AttributeColor(EAttribute Type);
 
 	// Getter
 	int GetLevel() const;

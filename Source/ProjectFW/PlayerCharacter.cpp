@@ -8,6 +8,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Gun.h"
 #include "StatComponent.h"
+#include "FloatingDamageText.h"
 
 // Sets default values
 APlayerCharacter::APlayerCharacter()
@@ -87,6 +88,23 @@ float APlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Damag
 		}
 
 		DamageToApply = Stat->CaculateDamageReceivedAndApply(DamageToApply, Attribute);
+
+		// 데미지 텍스트 스폰
+		if (FloatingDamageTextClass)
+		{
+			FHitResult HitResult;
+			FVector Direction;
+			DamageEvent.GetBestHitInfo(this, EventInstigator, HitResult, Direction);
+
+			FVector Location = HitResult.Location + FVector(FMath::RandRange(-30.0f, 30.0f), FMath::RandRange(-30.0f, 30.0f), FMath::RandRange(-30.0f, 30.0f));
+			FRotator Rotation = Direction.Rotation();
+
+			AFloatingDamageText* FloatingDamageText = GetWorld()->SpawnActor<AFloatingDamageText>(FloatingDamageTextClass, Location, Rotation);
+			if (FloatingDamageText)
+			{
+				FloatingDamageText->SetDamageText(DamageToApply, UStatComponent::AttributeColor(Attribute));
+			}
+		}		
 	}
 
 	return DamageToApply;

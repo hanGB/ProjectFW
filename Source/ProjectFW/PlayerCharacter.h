@@ -96,6 +96,10 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Stat")
 	class UStatComponent* Stat;
 
+	// Widget
+	UPROPERTY(EditDefaultsOnly, Category = "DamageText")
+	TSubclassOf<class AFloatingDamageText> FloatingDamageTextClass;
+
 	UPROPERTY()
 	class AGun* Gun;
 
